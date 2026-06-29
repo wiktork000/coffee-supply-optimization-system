@@ -137,4 +137,3 @@ class CorrectionOptimizationResult(BaseModel):
     final_orders: list[OrderItem] = []
     corrections: list[CorrectionItem] = []
     inventory_levels: list[InventoryLevel] = []
-    cost_breakdown: CostBreakdown | None = None

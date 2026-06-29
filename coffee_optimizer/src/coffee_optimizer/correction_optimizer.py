@@ -464,13 +464,6 @@ def _extract_correction_results(ampl: AMPL, data: dict) -> CorrectionOptimizatio
         if val > 0.5:
             fixed_delivery += C_fix.get((d, b), 0.0)
 
-    cost_breakdown = CostBreakdown(
-        purchase_base=purchase_base,
-        purchase_discount=purchase_actual - purchase_base,
-        fixed_delivery=fixed_delivery,
-        total=total_cost,
-    )
-
     return CorrectionOptimizationResult(
         status="Optimal",
         total_cost_pln=total_cost,
@@ -478,7 +471,6 @@ def _extract_correction_results(ampl: AMPL, data: dict) -> CorrectionOptimizatio
         final_orders=final_orders,
         corrections=corrections,
         inventory_levels=inventory_levels,
-        cost_breakdown=cost_breakdown,
     )
 
 
@@ -487,7 +479,8 @@ def run_correction_optimization(
 ) -> CorrectionOptimizationResult:
     data = _build_correction_ampl_data(request)
 
-    # Activate license if key is provided
+    modules.load()
+
     license_key = os.environ.get("AMPL_LICENSE_KEY")
     if license_key:
         modules.activate(license_key)
@@ -496,9 +489,7 @@ def run_correction_optimization(
 
     try:
         _load_correction_ampl(ampl, data)
-        # Use highs solver with tight tolerances for stability and precision
-        ampl.set_option("solver", "highs")
-        ampl.set_option("highs_options", "mip_rel_gap=1e-6 mip_abs_gap=1e-6 threads=1")
+        ampl.set_option("solver", "cbc")
         ampl.solve()
         return _extract_correction_results(ampl, data)
     finally:
