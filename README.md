@@ -34,21 +34,7 @@ Browser → React frontend → coffee_manager API → PostgreSQL
 
 The manager API exposes REST endpoints and OpenAPI documentation. Distributor self-service endpoints use the `X-API-Key` header.
 
-## Repository Structure
 
-```text
-CoffeeOrderingSystem/
-├── coffee_manager/
-│   ├── frontend/                  # React + Vite frontend
-│   ├── src/coffee_manager/         # FastAPI business service
-│   ├── database/                   # schema.sql and seed.sql
-│   └── tests/
-├── coffee_optimizer/
-│   └── src/coffee_optimizer/       # optimization service
-├── docs/                           # additional architecture/workflow docs
-├── docker-compose.yml
-└── README.md
-```
 
 ## My Role and Contributions
 
@@ -76,35 +62,7 @@ The final distributor workflow supports the following scenario:
 4. The distributor edits prices, availability, discount tiers and delivery parameters.
 5. The changes are saved through the backend and persisted in PostgreSQL.
 
-## Getting Started
 
-### Prerequisites
-
-* Docker and Docker Compose
-* Node.js 20+
-* Python 3.12+
-* Poetry
-
-### Environment variables
-
-Create a `.env` file in the project root. Example:
-
-```env
-POSTGRES_USER=coffee_user
-POSTGRES_PASSWORD=coffee_password
-POSTGRES_DB=coffee_db
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-
-JWT_SECRET=change-me-in-production
-JWT_ALGORITHM=HS256
-JWT_EXPIRE_MINUTES=1440
-
-OPTIMIZER_URL=http://coffee_optimizer_api:8001
-AMPL_LICENSE_KEY=your_ampl_license_key_here
-```
-
-Do not commit real secrets to the repository.
 
 ### Run with Docker Compose
 
@@ -120,33 +78,6 @@ Default local services:
 * Optimizer API: `http://localhost:8001`
 * PostgreSQL: `localhost:5432`
 
-## Testing
-
-Run backend tests:
-
-```bash
-cd coffee_manager
-poetry run pytest
-```
-
-Run optimizer tests:
-
-```bash
-cd coffee_optimizer
-poetry run pytest
-```
-
-Run frontend checks:
-
-```bash
-cd coffee_manager/frontend
-npm install
-npm run build
-```
-
-## Documentation
-
-Additional documentation is available in the `docs/` directory, including architecture notes, workflow descriptions, API notes and diagrams.
 
 ## Tech Stack
 
@@ -155,9 +86,3 @@ Additional documentation is available in the `docs/` directory, including archit
 **Optimization:** Python 3.12, FastAPI, AMPL, CBC
 **Database:** PostgreSQL 15
 **Infrastructure:** Docker, Docker Compose, GitHub Actions
-
-## Project Status
-
-The system implements the core workflow for managing coffee supply data, distributor offers, delivery parameters and optimization-based order planning.
-
-This is an academic portfolio version of a team project. Sensitive configuration and environment-specific data were removed.
