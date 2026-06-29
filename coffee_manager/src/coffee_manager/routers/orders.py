@@ -99,6 +99,7 @@ def confirm_orders(
     )
     return _to_response(order)
 
+
 @router.get("/{order_id}", response_model=OrderRecord)
 def get_order(
     order_id: str,
