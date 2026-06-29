@@ -1,9 +1,12 @@
-from amplpy import AMPL
+import os
+
+from amplpy import AMPL, modules
 
 from coffee_optimizer.models import (
     CorrectionItem,
     CorrectionOptimizationRequest,
     CorrectionOptimizationResult,
+    CostBreakdown,
     InventoryLevel,
     OrderItem,
 )
@@ -13,7 +16,6 @@ _SOLVE_STATUS_MAP = {
     "infeasible": "Infeasible",
     "unbounded": "Unbounded",
 }
-
 
 _CORRECTION_AMPL_MODEL = r"""
     set T ordered;
@@ -462,7 +464,7 @@ def _extract_correction_results(ampl: AMPL, data: dict) -> CorrectionOptimizatio
         if val > 0.5:
             fixed_delivery += C_fix.get((d, b), 0.0)
 
-    from coffee_optimizer.models import CostBreakdown
+
 
     cost_breakdown = CostBreakdown(
         purchase_base=purchase_base,
@@ -482,9 +484,7 @@ def _extract_correction_results(ampl: AMPL, data: dict) -> CorrectionOptimizatio
     )
 
 
-import os
 
-from amplpy import AMPL, modules
 
 
 def run_correction_optimization(

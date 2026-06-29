@@ -1,6 +1,9 @@
-from amplpy import AMPL
+import os
+
+from amplpy import AMPL, modules
 
 from coffee_optimizer.models import (
+    CostBreakdown,
     InventoryLevel,
     OptimizationRequest,
     OptimizationResult,
@@ -258,7 +261,7 @@ def _extract_results(ampl: AMPL, data: dict) -> OptimizationResult:
         if val > 0.5:
             fixed_delivery += C_fix.get((d, b), 0.0)
 
-    from coffee_optimizer.models import CostBreakdown
+    
 
     cost_breakdown = CostBreakdown(
         purchase_base=purchase_base,
@@ -277,9 +280,7 @@ def _extract_results(ampl: AMPL, data: dict) -> OptimizationResult:
     )
 
 
-import os
 
-from amplpy import AMPL, modules
 
 
 def run_optimization(request: OptimizationRequest) -> OptimizationResult:
