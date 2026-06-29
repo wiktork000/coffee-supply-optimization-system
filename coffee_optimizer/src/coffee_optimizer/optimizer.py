@@ -256,7 +256,11 @@ def _extract_results(ampl: AMPL, data: dict) -> OptimizationResult:
             purchase_base += p0 * val
             purchase_actual += p_disc * val
 
-    y_vals: dict = ampl.get_variable("y_skl").get_values().to_dict()
+    try:
+        y_vals: dict = ampl.get_variable("y_skl").get_values().to_dict()
+    except KeyError:
+        y_vals = {}
+
     for (d, b, t), val in y_vals.items():
         if val > 0.5:
             fixed_delivery += C_fix.get((d, b), 0.0)
@@ -281,6 +285,8 @@ def _extract_results(ampl: AMPL, data: dict) -> OptimizationResult:
 def run_optimization(request: OptimizationRequest) -> OptimizationResult:
     data = _build_ampl_data(request)
 
+    modules.load()
+
     license_key = os.environ.get("AMPL_LICENSE_KEY")
     if license_key:
         modules.activate(license_key)
@@ -288,7 +294,7 @@ def run_optimization(request: OptimizationRequest) -> OptimizationResult:
     ampl = AMPL()
     try:
         _load_ampl(ampl, data)
-        ampl.set_option("solver", "highs")
+        ampl.set_option("solver", "cbc")
         ampl.set_option("highs_options", "mip_rel_gap=1e-6 mip_abs_gap=1e-6 threads=1")
         ampl.solve()
         return _extract_results(ampl, data)

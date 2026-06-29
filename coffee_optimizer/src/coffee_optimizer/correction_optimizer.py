@@ -6,7 +6,6 @@ from coffee_optimizer.models import (
     CorrectionItem,
     CorrectionOptimizationRequest,
     CorrectionOptimizationResult,
-    CostBreakdown,
     InventoryLevel,
     OrderItem,
 )
