@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session, selectinload
@@ -68,32 +67,16 @@ def confirm_orders(
             detail="Optimization result not found",
         )
 
-    # Check if an order already exists for this scenario (e.g. from a previous result)
-    existing_order = (
-        db.query(Order).filter(Order.scenario_id == result.scenario_id).first()
+    order = Order(
+        result_id=result.id,
+        scenario_id=result.scenario_id,
+        total_cost_pln=result.total_cost_pln,
+        confirmed_by=current_user.id,
+        status="confirmed",
     )
-
-    if existing_order:
-        # Update existing order with the new result
-        order = existing_order
-        order.result_id = result.id
-        order.total_cost_pln = result.total_cost_pln
-        order.confirmed_by = current_user.id
-        order.status = "confirmed"
-        # Delete old items to replace them with new ones
-        db.query(OrderItem).filter(OrderItem.order_id == order.id).delete()
-    else:
-        # Create a new order
-        order = Order(
-            result_id=result.id,
-            scenario_id=result.scenario_id,
-            total_cost_pln=result.total_cost_pln,
-            confirmed_by=current_user.id,
-            status="confirmed",
-        )
-        db.add(order)
-
+    db.add(order)
     db.flush()
+
     for item in result.order_items:
         db.add(
             OrderItem(
@@ -105,7 +88,9 @@ def confirm_orders(
                 quantity_kg=item.quantity_kg,
             )
         )
+
     db.commit()
+
     order = (
         db.query(Order)
         .options(selectinload(Order.items))
@@ -114,10 +99,9 @@ def confirm_orders(
     )
     return _to_response(order)
 
-
 @router.get("/{order_id}", response_model=OrderRecord)
 def get_order(
-    order_id: UUID,
+    order_id: str,
     _: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
@@ -136,7 +120,7 @@ def get_order(
 
 @router.patch("/{order_id}/status", response_model=OrderRecord)
 def update_order_status(
-    order_id: UUID,
+    order_id: str,
     body: OrderStatusUpdate,
     _: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
