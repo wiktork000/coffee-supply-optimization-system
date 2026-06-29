@@ -464,8 +464,6 @@ def _extract_correction_results(ampl: AMPL, data: dict) -> CorrectionOptimizatio
         if val > 0.5:
             fixed_delivery += C_fix.get((d, b), 0.0)
 
-
-
     cost_breakdown = CostBreakdown(
         purchase_base=purchase_base,
         purchase_discount=purchase_actual - purchase_base,
@@ -482,9 +480,6 @@ def _extract_correction_results(ampl: AMPL, data: dict) -> CorrectionOptimizatio
         inventory_levels=inventory_levels,
         cost_breakdown=cost_breakdown,
     )
-
-
-
 
 
 def run_correction_optimization(
