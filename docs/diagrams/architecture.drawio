@@ -1,0 +1,55 @@
+<mxfile host="65bd71144e">
+    <diagram name="Architecture" id="0">
+        <mxGraphModel dx="177" dy="346" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Coffee Ordering System — Component Architecture" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="20" width="800" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="user" value="Office Manager&#xa;(Browser)" style="shape=umlActor;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="160" width="60" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="frontend" value="Frontend&#xa;(Vite + React)&#xa;:5173" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="170" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="manager" value="coffee_manager API&#xa;FastAPI :8000&#xa;&#xa;routers:&#xa;auth · api-keys · buildings&#xa;distributors · inventory&#xa;orders · optimization" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;verticalAlign=top;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="140" width="260" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="optimizer" value="coffee_optimizer API&#xa;FastAPI :8001&#xa;&#xa;POST /optimize&#xa;runs AMPL model (amplpy)&#xa;solver: CBC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;verticalAlign=top;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="940" y="140" width="260" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="ampl" value="AMPL Model&#xa;(MILP)&#xa;variables: x, x0, I, y_skl, y_rab" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1280" y="170" width="220" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="db" value="PostgreSQL 15&#xa;coffee_db :5432&#xa;&#xa;users · api_keys · buildings&#xa;distributors · daily_prices&#xa;discount_tiers · delivery_params&#xa;orders · optimization_*" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;verticalAlign=top;spacingTop=10;" parent="1" vertex="1">
+                    <mxGeometry x="540" y="440" width="260" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="env" value=".env / docker-compose.yml&#xa;POSTGRES_HOST · OPTIMIZER_URL · JWT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="560" width="280" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="docker" value="Docker Compose host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;fontSize=12;fontStyle=2;verticalAlign=top;spacingTop=4;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="120" width="1000" height="540" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" value="HTTPS / REST&#xa;JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="user" target="frontend" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e2" value="REST / JWT&#xa;Bearer or API-Key" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="frontend" target="manager" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" value="POST /optimize&#xa;httpx (60s)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="manager" target="optimizer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" value="amplpy" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="optimizer" target="ampl" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" value="SQLAlchemy ORM" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="manager" target="db" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" value="config" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;fontSize=10;" parent="1" source="env" target="manager" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

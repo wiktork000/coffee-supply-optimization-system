@@ -1,0 +1,35 @@
+# Environment / secrets - additional
+.env.*
+!.env.example
+
+# Python - additional
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node / frontend - additional
+node_modules/
+dist/
+build/
+.vite/
+
+# Logs / temp - additional
+*.log
+*.tmp
+
+# Databases / local files
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificates / keys
+*.pem
+*.key
+*.crt

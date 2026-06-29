@@ -1,0 +1,112 @@
+<mxfile host="65bd71144e">
+    <diagram name="Optimization Workflow" id="0">
+        <mxGraphModel dx="335" dy="381" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Optimization Workflow — POST /optimization" style="text;html=1;align=center;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="20" width="800" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l1" value="Frontend" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="80" width="160" height="950" as="geometry"/>
+                </mxCell>
+                <mxCell id="l2" value="coffee_manager" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="80" width="200" height="950" as="geometry"/>
+                </mxCell>
+                <mxCell id="l3" value="PostgreSQL" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                    <mxGeometry x="720" y="80" width="180" height="950" as="geometry"/>
+                </mxCell>
+                <mxCell id="l4" value="coffee_optimizer" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+                    <mxGeometry x="1020" y="80" width="200" height="950" as="geometry"/>
+                </mxCell>
+                <mxCell id="l5" value="AMPL / CBC" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                    <mxGeometry x="1340" y="80" width="160" height="950" as="geometry"/>
+                </mxCell>
+                <mxCell id="m1" value="1. POST /optimization&#xa;ScenarioCreateRequest" style="endArrow=block;html=1;rounded=0;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="170" as="sourcePoint"/>
+                        <mxPoint x="500" y="170" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m2" value="2. authenticate (JWT / API key)" style="endArrow=block;html=1;rounded=0;fontSize=11;dashed=1;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="500" y="220" as="sourcePoint"/>
+                        <mxPoint x="500" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m3" value="3. load distributors + daily_prices + discount_tiers + delivery_params" style="endArrow=block;html=1;rounded=0;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="500" y="290" as="sourcePoint"/>
+                        <mxPoint x="810" y="290" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m4" value="4. load buildings + daily_demand" style="endArrow=block;html=1;rounded=0;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="500" y="340" as="sourcePoint"/>
+                        <mxPoint x="810" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m5" value="5. rows" style="endArrow=open;html=1;rounded=0;dashed=1;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="810" y="380" as="sourcePoint"/>
+                        <mxPoint x="500" y="380" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m6" value="6. build optimizer_payload&#xa;(planning_days, distributors[], buildings[], decay_rate, historical_arrivals)" style="endArrow=block;html=1;rounded=0;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="500" y="430" as="sourcePoint"/>
+                        <mxPoint x="1120" y="430" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m7" value="7. load AMPL model + data, solver=cbc" style="endArrow=block;html=1;rounded=0;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1120" y="490" as="sourcePoint"/>
+                        <mxPoint x="1420" y="490" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m8" value="8. solve()" style="endArrow=open;html=1;rounded=0;dashed=1;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1420" y="540" as="sourcePoint"/>
+                        <mxPoint x="1120" y="540" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="note1" value="status ∈ {Optimal, Infeasible, Unbounded, Not Solved}" style="text;html=1;fontSize=10;fontStyle=2;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="555" width="280" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="m9" value="9. OptimizationResult&#xa;(orders, inventory_levels, total_cost_pln)" style="endArrow=open;html=1;rounded=0;dashed=1;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1120" y="610" as="sourcePoint"/>
+                        <mxPoint x="500" y="610" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m10" value="10. INSERT OptimizationScenario + Scenario(Distributor/Building)" style="endArrow=block;html=1;rounded=0;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="500" y="670" as="sourcePoint"/>
+                        <mxPoint x="810" y="670" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m11" value="11. INSERT OptimizationResult + OrderItems + InventoryLevels" style="endArrow=block;html=1;rounded=0;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="500" y="720" as="sourcePoint"/>
+                        <mxPoint x="810" y="720" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m12" value="12. commit + reload with selectinload" style="endArrow=open;html=1;rounded=0;dashed=1;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="810" y="770" as="sourcePoint"/>
+                        <mxPoint x="500" y="770" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="m13" value="13. 200 OK OptimizationResponse&#xa;(scenario_id, result_id, orders, inventory_levels, cost_breakdown)" style="endArrow=open;html=1;rounded=0;dashed=1;fontSize=11;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="500" y="830" as="sourcePoint"/>
+                        <mxPoint x="200" y="830" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="errbox" value="Errors:&#xa;404 — distributors/buildings not found&#xa;400 — bad historical_orders key&#xa;502 — optimizer returned non-2xx&#xa;503 — optimizer unreachable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;verticalAlign=top;fontSize=11;spacingLeft=10;spacingTop=6;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="900" width="380" height="100" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

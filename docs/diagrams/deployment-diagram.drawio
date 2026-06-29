@@ -1,0 +1,88 @@
+<mxfile host="65bd71144e">
+    <diagram name="UML Deployment" id="0">
+        <mxGraphModel dx="335" dy="381" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Deployment diagram — hardware view" style="text;html=1;align=center;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="20" width="800" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="node_client" value="&lt;&lt;device&gt;&gt;&#xa;User workstation" style="shape=mxgraph.bootstrap.rrect;rSize=8;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;verticalAlign=top;spacingTop=10;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="120" width="280" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_browser" value="&lt;&lt;artifact&gt;&gt;&#xa;Web browser" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#9673a6;fontSize=11;" parent="node_client" vertex="1">
+                    <mxGeometry x="40" y="60" width="200" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_spa" value="&lt;&lt;artifact&gt;&gt;&#xa;coffee_manager_spa.js&#xa;(React bundle)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" parent="art_browser" vertex="1">
+                    <mxGeometry x="20" y="30" width="160" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="node_server" value="&lt;&lt;device&gt;&gt;&#xa;Application server (Linux)" style="shape=mxgraph.bootstrap.rrect;rSize=8;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;spacingTop=10;fontSize=13;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="460" y="100" width="1180" height="800" as="geometry"/>
+                </mxCell>
+                <mxCell id="env_docker" value="&lt;&lt;executionEnvironment&gt;&gt; Docker Engine + docker compose" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=1;verticalAlign=top;spacingTop=8;fontSize=12;fontStyle=2;" parent="node_server" vertex="1">
+                    <mxGeometry x="20" y="50" width="1140" height="720" as="geometry"/>
+                </mxCell>
+                <mxCell id="ctr_fe" value="&lt;&lt;container&gt;&gt;&#xa;coffee_manager_frontend&#xa;Node 20 / Vite :5173" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;spacingTop=8;fontSize=12;" parent="env_docker" vertex="1">
+                    <mxGeometry x="40" y="60" width="260" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_fe_src" value="&lt;&lt;artifact&gt;&gt;&#xa;frontend/src (mount)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#6c8ebf;fontSize=10;" parent="ctr_fe" vertex="1">
+                    <mxGeometry x="20" y="80" width="220" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_nm" value="&lt;&lt;volume&gt;&gt;&#xa;frontend_node_modules" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#6c8ebf;fontSize=10;" parent="ctr_fe" vertex="1">
+                    <mxGeometry x="20" y="130" width="220" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="ctr_mgr" value="&lt;&lt;container&gt;&gt;&#xa;coffee_manager_api&#xa;Python 3.12 / FastAPI :8000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=top;spacingTop=8;fontSize=12;" parent="env_docker" vertex="1">
+                    <mxGeometry x="340" y="60" width="320" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_mgr" value="&lt;&lt;artifact&gt;&gt;&#xa;coffee_manager wheel&#xa;(Poetry · uvicorn)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#d79b00;fontSize=10;" parent="ctr_mgr" vertex="1">
+                    <mxGeometry x="20" y="90" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_env" value="&lt;&lt;artifact&gt;&gt;&#xa;.env (POSTGRES_*, JWT_SECRET, OPTIMIZER_URL)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#d79b00;fontSize=10;" parent="ctr_mgr" vertex="1">
+                    <mxGeometry x="20" y="150" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_src_mgr" value="&lt;&lt;mount&gt;&gt; coffee_manager/src" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#d79b00;fontSize=10;" parent="ctr_mgr" vertex="1">
+                    <mxGeometry x="20" y="210" width="280" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="ctr_opt" value="&lt;&lt;container&gt;&gt;&#xa;coffee_optimizer_api&#xa;Python 3.12 / FastAPI :8001" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;spacingTop=8;fontSize=12;" parent="env_docker" vertex="1">
+                    <mxGeometry x="700" y="60" width="320" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_opt" value="&lt;&lt;artifact&gt;&gt;&#xa;coffee_optimizer wheel&#xa;(Poetry · uvicorn)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#d6b656;fontSize=10;" parent="ctr_opt" vertex="1">
+                    <mxGeometry x="20" y="90" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_ampl" value="&lt;&lt;artifact&gt;&gt;&#xa;amplpy + CBC solver" style="shape=note;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" parent="ctr_opt" vertex="1">
+                    <mxGeometry x="20" y="150" width="280" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_src_opt" value="&lt;&lt;mount&gt;&gt; coffee_optimizer/src" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#d6b656;fontSize=10;" parent="ctr_opt" vertex="1">
+                    <mxGeometry x="20" y="210" width="280" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="ctr_db" value="&lt;&lt;container&gt;&gt;&#xa;coffee_postgres_db&#xa;postgres:15-alpine :5432" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;spacingTop=8;fontSize=12;" parent="env_docker" vertex="1">
+                    <mxGeometry x="340" y="420" width="320" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_pg" value="&lt;&lt;artifact&gt;&gt;&#xa;PostgreSQL 15 (alpine)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#82b366;fontSize=10;" parent="ctr_db" vertex="1">
+                    <mxGeometry x="20" y="90" width="280" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="art_schema" value="&lt;&lt;artifact&gt;&gt;&#xa;schema.sql + seed.sql" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff;strokeColor=#82b366;fontSize=10;" parent="ctr_db" vertex="1">
+                    <mxGeometry x="20" y="140" width="280" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="vol_pg" value="&lt;&lt;volume&gt;&gt;&#xa;postgres_data" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;verticalAlign=top;spacingTop=6;" parent="env_docker" vertex="1">
+                    <mxGeometry x="700" y="450" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="cn2" value="«REST/JSON» TCP 8000" style="endArrow=open;html=1;rounded=0;fontSize=10;" parent="env_docker" source="ctr_fe" target="ctr_mgr" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="cn3" value="«REST/JSON»&#xa;TCP 8001&#xa;OPTIMIZER_URL" style="endArrow=open;html=1;rounded=0;fontSize=10;" parent="env_docker" source="ctr_mgr" target="ctr_opt" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="cn4" value="«JDBC/psycopg»&#xa;TCP 5432" style="endArrow=open;html=1;rounded=0;fontSize=10;" parent="env_docker" source="ctr_mgr" target="ctr_db" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="cn5" value="«mount»" style="endArrow=open;html=1;rounded=0;fontSize=10;dashed=1;" parent="env_docker" source="ctr_db" target="vol_pg" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="cn1" value="«HTTPS»&#xa;TCP 5173 / 8000" style="endArrow=open;html=1;rounded=0;fontSize=10;" parent="1" source="node_client" target="node_server" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

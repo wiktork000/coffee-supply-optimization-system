@@ -1,0 +1,127 @@
+<mxfile host="65bd71144e">
+    <diagram name="Logical Data Model" id="0">
+        <mxGraphModel dx="3954" dy="765" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1500" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Logical data model — coffee_manager (PostgreSQL)" style="text;html=1;align=center;fontSize=18;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="700" y="20" width="1000" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_users" value="&lt;b&gt;users&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;name : varchar(100) «U» NN&lt;br&gt;password_hash : text NN&lt;br&gt;role : varchar(30) NN {coordinator|admin}" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="445" y="80" width="270" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_dist" value="&lt;b&gt;distributors&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;username : varchar(100) «U» NN&lt;br&gt;contact_email : varchar(100) «U» NN&lt;br&gt;contact_phone : varchar(20) «U» NN&lt;br&gt;active : bool NN&lt;br&gt;created_at / updated_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="-140" y="290" width="270" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_key" value="&lt;b&gt;api_keys&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; distributor_id : UUID NN&lt;br&gt;key_prefix : varchar(20) NN&lt;br&gt;key_hash : text «U» NN&lt;br&gt;label : varchar(255) NN&lt;br&gt;active : bool NN&lt;br&gt;revoked_at : timestamptz&lt;br&gt;created_at / updated_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="-200" y="640" width="270" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_dp" value="&lt;b&gt;distributor_daily_prices&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; distributor_id : UUID NN&lt;br&gt;day : int NN (&amp;ge;1)&lt;br&gt;base_price : numeric(10,2) NN&lt;br&gt;availability_kg : numeric(10,2) NN&lt;br&gt;&lt;i&gt;«U» (distributor_id, day)&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="420" y="280" width="300" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_dt" value="&lt;b&gt;distributor_discount_tiers&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; (distributor_id, day) → daily_prices&lt;br&gt;level : int NN (&amp;ge;1)&lt;br&gt;quantity_kg : numeric(10,2) NN&lt;br&gt;unit_price : numeric(10,2) NN&lt;br&gt;&lt;i&gt;«U» (distributor_id, day, level)&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="420" y="490" width="300" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_dlv" value="&lt;b&gt;delivery_params&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; distributor_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; building_id : UUID NN&lt;br&gt;lead_time_days : int NN&lt;br&gt;fixed_cost_pln : numeric(10,2) NN&lt;br&gt;correction_cost_per_kg : numeric(10,2) NN&lt;br&gt;max_correction_kg : numeric(10,2) NN&lt;br&gt;&lt;i&gt;«U» (distributor_id, building_id)&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="420" y="700" width="300" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_b" value="&lt;b&gt;buildings&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;name : varchar(100) NN&lt;br&gt;location : text&lt;br&gt;max_capacity_kg : numeric(10,2) NN&lt;br&gt;initial_inventory_kg : numeric(10,2) NN&lt;br&gt;current_inventory_kg : numeric NN&lt;br&gt;created_at / updated_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="290" width="290" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_bdd" value="&lt;b&gt;building_daily_demand&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; building_id : UUID NN&lt;br&gt;day : int NN (&amp;ge;1)&lt;br&gt;demand_kg : numeric(12,3) NN&lt;br&gt;&lt;i&gt;«U» (building_id, day)&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="520" width="290" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_scn" value="&lt;b&gt;optimization_scenarios&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;name : varchar(255) NN&lt;br&gt;planning_horizon_days : int NN (1..30)&lt;br&gt;decay_rate : numeric(5,4) NN (0..1)&lt;br&gt;historical_orders : jsonb&lt;br&gt;created_at / updated_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1210" y="90" width="300" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_sd" value="&lt;b&gt;optimization_scenario_distributors&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK,FK&lt;/u&gt; scenario_id : UUID&lt;br&gt;&lt;u&gt;PK,FK&lt;/u&gt; distributor_id : UUID&lt;br&gt;&lt;i&gt;(associative / join table)&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1210" y="300" width="300" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_sb" value="&lt;b&gt;optimization_scenario_buildings&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK,FK&lt;/u&gt; scenario_id : UUID&lt;br&gt;&lt;u&gt;PK,FK&lt;/u&gt; building_id : UUID&lt;br&gt;&lt;i&gt;(associative / join table)&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1210" y="450" width="300" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_res" value="&lt;b&gt;optimization_results&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; scenario_id : UUID NN&lt;br&gt;status : varchar(30) NN {Optimal|Infeasible|&lt;br&gt;&amp;nbsp;&amp;nbsp;Unbounded|Not Solved}&lt;br&gt;total_cost_pln : numeric(14,2)&lt;br&gt;purchase_base / purchase_discount : numeric(14,2)&lt;br&gt;fixed_delivery / total : numeric(14,2)&lt;br&gt;solver_message : text&lt;br&gt;created_at / updated_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1620" y="90" width="320" height="210" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_ooi" value="&lt;b&gt;optimization_order_items&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; result_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; distributor_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; building_id : UUID NN&lt;br&gt;day : int NN&lt;br&gt;threshold_level : int NN&lt;br&gt;quantity_kg : numeric(12,3) NN" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1620" y="360" width="320" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_oil" value="&lt;b&gt;optimization_inventory_levels&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; result_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; building_id : UUID NN&lt;br&gt;day : int NN&lt;br&gt;level_kg : numeric(12,3) NN&lt;br&gt;&lt;i&gt;«U» (result_id, building_id, day)&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="1620" y="580" width="320" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_ord" value="&lt;b&gt;orders&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; result_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; scenario_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; confirmed_by : UUID NULL&lt;br&gt;total_cost_pln : numeric(14,2)&lt;br&gt;status : varchar(30) NN {confirmed|pending|cancelled}&lt;br&gt;created_at / updated_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="820" width="320" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="t_oi" value="&lt;b&gt;order_items&lt;/b&gt;&lt;hr size=&quot;1&quot;&gt;&lt;u&gt;PK&lt;/u&gt; id : UUID&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; order_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; distributor_id : UUID NN&lt;br&gt;&lt;i&gt;FK&lt;/i&gt; building_id : UUID NN&lt;br&gt;day : int NN&lt;br&gt;threshold_level : int NN&lt;br&gt;quantity_kg : numeric(12,3) NN" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="420" y="1080" width="320" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_dist_key" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" parent="1" source="t_dist" target="t_key" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_dist_dp" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_dist" target="t_dp" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_dp_dt" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_dp" target="t_dt" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_dist_dlv" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_dist" target="t_dlv" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_b_dlv" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_b" target="t_dlv" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_b_bdd" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_b" target="t_bdd" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_scn_sd" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_scn" target="t_sd" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_dist_sd" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_dist" target="t_sd" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_scn_sb" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_scn" target="t_sb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_b_sb" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_b" target="t_sb" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_scn_res" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_scn" target="t_res" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_res_ooi" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_res" target="t_ooi" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_res_oil" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_res" target="t_oil" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_res_ord" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_res" target="t_ord" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_scn_ord" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_scn" target="t_ord" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_user_ord" value="confirmed_by (0..1)" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERzeroToOne;startFill=0;endArrow=ERmany;endFill=0;dashed=1;fontSize=9;" parent="1" source="t_users" target="t_ord" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_ord_oi" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;" parent="1" source="t_ord" target="t_oi" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_dist_oi" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_dist" target="t_oi" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_b_oi" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_b" target="t_oi" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_dist_ooi" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_dist" target="t_ooi" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_b_ooi" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_b" target="t_ooi" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="r_b_oil" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;dashed=1;" parent="1" source="t_b" target="t_oil" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

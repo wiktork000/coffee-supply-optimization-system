@@ -1,0 +1,1075 @@
+openapi: 3.0.3
+info:
+    title: Coffee Supply Management System API
+    version: "1.0.0"
+    contact:
+        name: Team 67 - PZSP2
+        email: coffee-system@pw.edu.pl
+tags:
+    - name: Authentication
+      description: Coordinator login
+    - name: Distributors
+      description: Distributor management (coordinator)
+    - name: Distributors - Self Service
+      description: Distributor manages their own price list via API key
+    - name: Buildings
+      description: Building management
+    - name: Optimization
+      description: Creating scenarios and running AMPL optimization models
+    - name: Orders
+      description: Confirmed orders registry
+    - name: Inventory
+      description: Inventory monitoring
+    - name: API Keys
+      description: API key management for distributors
+    - name: System
+      description: System status
+
+paths:
+    /auth/login:
+        post:
+            tags: [Authentication]
+            summary: Log in as coordinator
+            operationId: login
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/LoginRequest"
+                        example:
+                            username: admin
+                            password: secret
+            responses:
+                "200":
+                    description: Session token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/LoginResponse"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    /auth/register:
+        post:
+            tags: [Authentication]
+            summary: Register a new coordinator
+            operationId: register
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/LoginRequest"
+            responses:
+                "201":
+                    description: Account created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/LoginResponse"
+                "409":
+                    description: Username already taken
+
+    /distributors:
+        get:
+            tags: [Distributors]
+            summary: List distributors
+            operationId: listDistributors
+            security:
+                - BearerAuth: []
+            responses:
+                "200":
+                    description: List of distributors
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/DistributorResponse"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+        post:
+            tags: [Distributors]
+            summary: Add distributor
+            operationId: createDistributor
+            security:
+                - BearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/DistributorCreateRequest"
+                        example:
+                            username: "Kaffa Premium Sp. z o.o."
+                            contact_email: "orders@kaffa.pl"
+                            contact_phone: "+48 123 456 789"
+                            daily_prices:
+                                - day: 1
+                                  base_price: 12.0
+                                  availability_kg: 200.0
+                                  discount_tiers:
+                                      - level: 1
+                                        quantity_kg: 30.0
+                                        unit_price: 10.0
+                                      - level: 2
+                                        quantity_kg: 60.0
+                                        unit_price: 8.0
+                            delivery_params:
+                                - building_id: "bld-001"
+                                  lead_time_days: 1
+                                  fixed_cost_pln: 50.0
+                                  correction_cost_per_kg: 1.0
+                                  max_correction_kg: 20.0
+            responses:
+                "201":
+                    description: Distributor created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DistributorResponse"
+
+    /distributors/{distributor_id}:
+        get:
+            tags: [Distributors]
+            summary: Distributor details
+            operationId: getDistributor
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/DistributorId"
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DistributorResponse"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+        put:
+            tags: [Distributors]
+            summary: Update distributor
+            operationId: updateDistributor
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/DistributorId"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/DistributorUpdateRequest"
+            responses:
+                "200":
+                    description: Updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DistributorResponse"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+        delete:
+            tags: [Distributors]
+            summary: Delete distributor
+            operationId: deleteDistributor
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/DistributorId"
+            responses:
+                "204":
+                    description: Deleted
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /distributors/self/prices:
+        put:
+            tags: [Distributors - Self Service]
+            summary: Update own price list (distributor via API key)
+            operationId: updateOwnPrices
+            security:
+                - ApiKeyAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/DistributorUpdateRequest"
+            responses:
+                "200":
+                    description: Price list updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DistributorResponse"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    /distributors/{distributor_id}/api-keys:
+        get:
+            tags: [API Keys]
+            summary: List distributor API keys
+            operationId: listApiKeys
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/DistributorId"
+            responses:
+                "200":
+                    description: List of API keys
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/ApiKeyResponse"
+
+        post:
+            tags: [API Keys]
+            summary: Generate API key for distributor
+            operationId: createApiKey
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/DistributorId"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ApiKeyCreateRequest"
+                        example:
+                            label: "ERP Integration Key"
+            responses:
+                "201":
+                    description: Key generated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ApiKeyResponse"
+                            example:
+                                id: "3f2b1a..."
+                                key: "cof_xK7mNpQ..."
+                                label: "ERP Integration Key"
+                                distributor_id: "dist-001"
+                                active: true
+                                created_at: "2026-04-16T10:00:00Z"
+
+    /api-keys/{key_id}:
+        delete:
+            tags: [API Keys]
+            summary: Revoke API key
+            operationId: revokeApiKey
+            security:
+                - BearerAuth: []
+            parameters:
+                - name: key_id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: UUID
+            responses:
+                "204":
+                    description: Key revoked
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /buildings:
+        get:
+            tags: [Buildings]
+            summary: List buildings
+            operationId: listBuildings
+            security:
+                - BearerAuth: []
+            responses:
+                "200":
+                    description: List of buildings
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/BuildingResponse"
+
+        post:
+            tags: [Buildings]
+            summary: Add building
+            operationId: createBuilding
+            security:
+                - BearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/BuildingCreateRequest"
+                        example:
+                            name: "Building A - Downtown"
+                            location: "123 Main St, Warsaw"
+                            max_capacity_kg: 150.0
+                            initial_inventory_kg: 20.0
+                            daily_demand:
+                                - day: 1
+                                  demand_kg: 15.0
+                                - day: 2
+                                  demand_kg: 18.0
+            responses:
+                "201":
+                    description: Building created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BuildingResponse"
+
+    /buildings/{building_id}:
+        get:
+            tags: [Buildings]
+            summary: Building details
+            operationId: getBuilding
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/BuildingId"
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BuildingResponse"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+        put:
+            tags: [Buildings]
+            summary: Update building
+            operationId: updateBuilding
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/BuildingId"
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/BuildingCreateRequest"
+            responses:
+                "200":
+                    description: Updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BuildingResponse"
+
+        delete:
+            tags: [Buildings]
+            summary: Delete building
+            operationId: deleteBuilding
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/BuildingId"
+            responses:
+                "204":
+                    description: Deleted
+
+    /optimization:
+        get:
+            tags: [Optimization]
+            summary: Optimization history
+            operationId: listOptimizations
+            security:
+                - BearerAuth: []
+            responses:
+                "200":
+                    description: List of optimization results
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/OptimizationResponse"
+
+        post:
+            tags: [Optimization]
+            summary: Run optimization
+            operationId: runOptimization
+            security:
+                - BearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ScenarioCreateRequest"
+            responses:
+                "200":
+                    description: Optimization result
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OptimizationResponse"
+
+    /optimization/{result_id}:
+        get:
+            tags: [Optimization]
+            summary: Get optimization result details
+            operationId: getOptimizationResult
+            security:
+                - BearerAuth: []
+            parameters:
+                - name: result_id
+                  in: path
+                  required: true
+                  description: Optimization result UUID
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Optimization result details
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OptimizationResponse"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /orders:
+        get:
+            tags: [Orders]
+            summary: Order history
+            operationId: listOrders
+            security:
+                - BearerAuth: []
+            parameters:
+                - name: status
+                  in: query
+                  schema:
+                      type: string
+                      enum: [confirmed, pending, cancelled]
+            responses:
+                "200":
+                    description: List of orders
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/OrderRecord"
+
+        post:
+            tags: [Orders]
+            summary: Confirm order schedule
+            operationId: confirmOrders
+            security:
+                - BearerAuth: []
+            parameters:
+                - name: result_id
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                  description: Optimization result ID to confirm
+            responses:
+                "201":
+                    description: Order confirmed
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OrderRecord"
+
+    /orders/{order_id}:
+        get:
+            tags: [Orders]
+            summary: Get order details
+            operationId: getOrder
+            security:
+                - BearerAuth: []
+            parameters:
+                - name: order_id
+                  in: path
+                  required: true
+                  description: Order UUID
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Order details
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OrderRecord"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /orders/{order_id}/status:
+        patch:
+            tags: [Orders]
+            summary: Update order status
+            operationId: updateOrderStatus
+            security:
+                - BearerAuth: []
+            parameters:
+                - name: order_id
+                  in: path
+                  required: true
+                  description: Order UUID
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required: [status]
+                            properties:
+                                status:
+                                    type: string
+                                    enum: [confirmed, pending, cancelled]
+                        example:
+                            status: cancelled
+            responses:
+                "200":
+                    description: Order status updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OrderRecord"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /inventory:
+        get:
+            tags: [Inventory]
+            summary: Current inventory levels
+            operationId: getInventory
+            security:
+                - BearerAuth: []
+            responses:
+                "200":
+                    description: Inventory levels for all buildings
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/InventoryStatus"
+
+    /inventory/{building_id}:
+        put:
+            tags: [Inventory]
+            summary: Update building inventory
+            operationId: updateInventory
+            security:
+                - BearerAuth: []
+            parameters:
+                - $ref: "#/components/parameters/BuildingId"
+                - name: current_kg
+                  in: query
+                  required: true
+                  schema:
+                      type: number
+                      format: float
+                      minimum: 0
+            responses:
+                "200":
+                    description: Inventory updated
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    building_id:
+                                        type: string
+                                    current_inventory_kg:
+                                        type: number
+
+    /health:
+        get:
+            tags: [System]
+            summary: Health check
+            operationId: healthCheck
+            responses:
+                "200":
+                    description: System is running
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: ok
+                                    service:
+                                        type: string
+                                        example: coffee-supply-api
+                                    version:
+                                        type: string
+                                        example: "1.0.0"
+
+components:
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: Coordinator session token (from `/auth/login`)
+        ApiKeyAuth:
+            type: apiKey
+            in: header
+            name: X-Api-Key
+            description: Distributor API key (format `cof_...`)
+
+    parameters:
+        DistributorId:
+            name: distributor_id
+            in: path
+            required: true
+            schema:
+                type: string
+                format: UUID
+            description: Distributor UUID
+        BuildingId:
+            name: building_id
+            in: path
+            required: true
+            schema:
+                type: string
+                format: UUID
+            description: Building UUID
+
+    responses:
+        Unauthorized:
+            description: Missing or invalid token/API key
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/ErrorResponse"
+                    example:
+                        detail: "Authentication required"
+        NotFound:
+            description: Resource not found
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/ErrorResponse"
+                    example:
+                        detail: "Not found"
+
+    schemas:
+        ErrorResponse:
+            type: object
+            properties:
+                detail:
+                    type: string
+
+        LoginRequest:
+            type: object
+            required: [username, password]
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+                    format: password
+
+        LoginResponse:
+            type: object
+            properties:
+                token:
+                    type: string
+                    description: Bearer token for use in Authorization header
+                user_id:
+                    type: string
+                    format: UUID
+                role:
+                    type: string
+                    enum: [coordinator, admin]
+
+        DiscountTier:
+            type: object
+            required: [level, quantity_kg, unit_price]
+            properties:
+                level:
+                    type: integer
+                    minimum: 1
+                    description: Discount tier number
+                quantity_kg:
+                    type: number
+                    format: float
+                    description: "Quantity threshold [kg]"
+                unit_price:
+                    type: number
+                    format: float
+                    description: "Unit price [PLN/kg]"
+
+        DailyPrice:
+            type: object
+            required: [day, base_price, availability_kg]
+            properties:
+                day:
+                    type: integer
+                    minimum: 1
+                    description: Planning day
+                base_price:
+                    type: number
+                    format: float
+                    description: "Base price [PLN/kg]"
+                availability_kg:
+                    type: number
+                    format: float
+                    description: "Availability [kg]"
+                discount_tiers:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/DiscountTier"
+                    description: "Discount tiers applicable on this day"
+
+        DeliveryParams:
+            type: object
+            required: [building_id, lead_time_days, fixed_cost_pln]
+            properties:
+                building_id:
+                    type: string
+                    description: Building ID
+                lead_time_days:
+                    type: integer
+                    minimum: 0
+                    description: "Lead time [days]"
+                fixed_cost_pln:
+                    type: number
+                    format: float
+                    description: "Fixed delivery cost [PLN]"
+                correction_cost_per_kg:
+                    type: number
+                    format: float
+                    default: 0.0
+                    description: "Correction cost [PLN/kg]"
+                max_correction_kg:
+                    type: number
+                    format: float
+                    default: 1000000.0
+                    description: "Maximum correction [kg]"
+
+        DistributorCreateRequest:
+            type: object
+            required: [username, contact_email, contact_phone, daily_prices, delivery_params]
+            properties:
+                username:
+                    type: string
+                contact_email:
+                    type: string
+                    format: email
+                contact_phone:
+                    type: string
+                daily_prices:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/DailyPrice"
+                delivery_params:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/DeliveryParams"
+
+        DistributorUpdateRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                    nullable: true
+                contact_email:
+                    type: string
+                    nullable: true
+                contact_phone:
+                    type: string
+                    nullable: true
+                daily_prices:
+                    type: array
+                    nullable: true
+                    items:
+                        $ref: "#/components/schemas/DailyPrice"
+                delivery_params:
+                    type: array
+                    nullable: true
+                    items:
+                        $ref: "#/components/schemas/DeliveryParams"
+
+        DistributorResponse:
+            allOf:
+                - $ref: "#/components/schemas/DistributorCreateRequest"
+                - type: object
+                  properties:
+                      id:
+                          type: string
+                      active:
+                          type: boolean
+                      created_at:
+                          type: string
+                          format: date-time
+                      updated_at:
+                          type: string
+                          format: date-time
+
+        DailyDemand:
+            type: object
+            required: [day, demand_kg]
+            properties:
+                day:
+                    type: integer
+                    minimum: 1
+                demand_kg:
+                    type: number
+                    format: float
+                    minimum: 0
+                    description: "Daily demand [kg]"
+
+        BuildingCreateRequest:
+            type: object
+            required: [name, max_capacity_kg, daily_demand]
+            properties:
+                name:
+                    type: string
+                location:
+                    type: string
+                    nullable: true
+                max_capacity_kg:
+                    type: number
+                    format: float
+                    description: "Storage capacity [kg]"
+                initial_inventory_kg:
+                    type: number
+                    format: float
+                    default: 0.0
+                    description: "Initial inventory level [kg]"
+                daily_demand:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/DailyDemand"
+
+        BuildingResponse:
+            allOf:
+                - $ref: "#/components/schemas/BuildingCreateRequest"
+                - type: object
+                  properties:
+                      id:
+                          type: string
+                      current_inventory_kg:
+                          type: number
+                          format: float
+                          description: "Current inventory level [kg]"
+                      created_at:
+                          type: string
+                          format: date-time
+                      updated_at:
+                          type: string
+                          format: date-time
+
+        ScenarioCreateRequest:
+            type: object
+            required: [name, distributor_ids, building_ids]
+            properties:
+                name:
+                    type: string
+                planning_horizon_days:
+                    type: integer
+                    minimum: 1
+                    maximum: 30
+                    default: 7
+                    description: "Planning horizon [days]"
+                distributor_ids:
+                    type: array
+                    items:
+                        type: string
+                    description: List of distributor IDs
+                building_ids:
+                    type: array
+                    items:
+                        type: string
+                    description: List of building IDs
+                decay_rate:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 1
+                    default: 0.05
+                    description: "Daily coffee decay rate"
+                historical_orders:
+                    type: object
+                    nullable: true
+                    additionalProperties:
+                        type: number
+                    description: "Historical orders in progress"
+
+        OrderItem:
+            type: object
+            properties:
+                distributor_id:
+                    type: string
+                    format: uuid
+                building_id:
+                    type: string
+                    format: uuid
+                day:
+                    type: integer
+                    minimum: 1
+                threshold_level:
+                    type: integer
+                    minimum: 0
+                    description: "0 = no tier, >= 1 = discount tier number"
+                quantity_kg:
+                    type: number
+                    format: float
+                    minimum: 0
+
+        InventoryLevel:
+            type: object
+            properties:
+                building_id:
+                    type: string
+                day:
+                    type: integer
+                level_kg:
+                    type: number
+                    format: float
+
+        OptimizationResponse:
+            type: object
+            properties:
+                scenario_id:
+                    type: string
+                    format: UUID
+                result_id:
+                    type: string
+                    format: UUID
+                status:
+                    type: string
+                    enum: [Optimal, Infeasible, Unbounded, Not Solved]
+                    description: AMPL solver status
+                total_cost_pln:
+                    type: number
+                    format: float
+                    description: Total cost of optimal solution [PLN]
+                solver_message:
+                    type: string
+                    nullable: true
+                    description: Raw solver status message
+                orders:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OrderItem"
+                    description: Order schedule
+                inventory_levels:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/InventoryLevel"
+                    description: Projected inventory levels
+                cost_breakdown:
+                    type: object
+                    nullable: true
+                    properties:
+                        purchase_base:
+                            type: number
+                        purchase_discount:
+                            type: number
+                        fixed_delivery:
+                            type: number
+                        total:
+                            type: number
+
+        OrderRecord:
+            type: object
+            properties:
+                id:
+                    type: string
+                result_id:
+                    type: string
+                scenario_id:
+                    type: string
+                orders:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/OrderItem"
+                total_cost_pln:
+                    type: number
+                confirmed_by:
+                    type: string
+                    format: UUID
+                status:
+                    type: string
+                    enum: [confirmed, pending, cancelled]
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+
+        InventoryStatus:
+            type: object
+            properties:
+                building_id:
+                    type: string
+                    format: UUID
+                building_name:
+                    type: string
+                current_inventory_kg:
+                    type: number
+                    format: float
+                max_capacity_kg:
+                    type: number
+                    format: float
+                fill_percent:
+                    type: number
+                    format: float
+                    description: "Warehouse fill level [%]"
+
+        ApiKeyCreateRequest:
+            type: object
+            required: [label]
+            properties:
+                label:
+                    type: string
+                    description: Descriptive key label
+
+        ApiKeyResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                key:
+                    type: string
+                    description: "API key (format: cof_...) — only present on creation"
+                label:
+                    type: string
+                distributor_id:
+                    type: string
+                    format: UUID
+                active:
+                    type: boolean
+                revoked_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                created_at:
+                    type: string
+                    format: date-time
