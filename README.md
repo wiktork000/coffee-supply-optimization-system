@@ -1,4 +1,4 @@
-# „Coffee Supply Optimization System
+# Coffee Supply Optimization System
 
 A full-stack system for managing coffee supply in a multi-location office environment.
 
